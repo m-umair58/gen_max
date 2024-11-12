@@ -23,6 +23,7 @@ export class AuthService {
             data: {
               email: dto.email,
               hash,
+              Role: "User"
             },
           });
           //return the saved user
