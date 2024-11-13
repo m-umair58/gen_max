@@ -21,8 +21,8 @@ export class UserController {
         return this.userService.editUser(userId,dto);
     }
 
-    @Get()
-    getUserById(@GetUser('id')userId:number){
-        return this.userService.getUserById(userId);
-    }
+    // @Get()
+    // getUserById(@GetUser('id')userId:number){
+    //     return this.userService.getUserById(userId);
+    // }
 }

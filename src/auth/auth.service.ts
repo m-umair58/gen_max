@@ -19,9 +19,7 @@ export class AuthService {
         const hash = await argon.hash(dto.password);
         try {
           // add user to the database
-          console.log(dto.role)
           if(!dto.role){
-            console.log(dto.role)
             throw new BadRequestException('Role field is Required');
           }
           const user = await this.prisma.user.create({
@@ -40,6 +38,9 @@ export class AuthService {
           if (e instanceof PrismaClientKnownRequestError) {
             console.log('Forbidden exception caught:', e.message); 
             throw new ForbiddenException('Email already taken');
+          }
+          return {
+            msg:"error occured"
           }
         }
       }
