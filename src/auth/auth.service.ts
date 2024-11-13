@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { AuthDto } from './dto';
 import * as argon from 'argon2'
@@ -19,17 +19,26 @@ export class AuthService {
         const hash = await argon.hash(dto.password);
         try {
           // add user to the database
+          console.log(dto.role)
+          if(!dto.role){
+            console.log(dto.role)
+            throw new BadRequestException('Role field is Required');
+          }
           const user = await this.prisma.user.create({
             data: {
               email: dto.email,
               hash,
-              Role: "User"
+              Role: dto.role
             },
           });
           //return the saved user
         return this.signToken(user.id, user.email);
         } catch (e) {
+          if (e instanceof BadRequestException) {
+            throw new BadRequestException('Role field is Required');
+          }
           if (e instanceof PrismaClientKnownRequestError) {
+            console.log('Forbidden exception caught:', e.message); 
             throw new ForbiddenException('Email already taken');
           }
         }

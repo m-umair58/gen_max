@@ -17,5 +17,7 @@
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false
-  }
+  },
+  "include": ["src/**/*.ts"],  // Keep all the source TypeScript files
+  "exclude": ["src/**/*.spec.ts"]  // Exclude test files from the compilation
 }
