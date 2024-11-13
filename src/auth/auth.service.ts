@@ -40,7 +40,8 @@ export class AuthService {
             throw new ForbiddenException('Email already taken');
           }
           return {
-            msg:"error occured"
+            msg:"error occured",
+            details:e.message
           }
         }
       }
