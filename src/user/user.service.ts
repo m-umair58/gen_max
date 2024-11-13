@@ -19,4 +19,15 @@ export class UserService {
 
         return user;
     }
+
+    async getUserById(userId){
+        const user = await this.prisma.user.findFirst({
+            where : {
+                id:userId
+            },
+        })
+        
+        delete user.hash
+        return user;
+    }
 }
