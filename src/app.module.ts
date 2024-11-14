@@ -6,6 +6,7 @@ import { UserModule } from './user/user.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { ConfigModule } from '@nestjs/config';
 import { GeneratorModule } from './generator/generator.module';
+import { BookingsModule } from './bookings/bookings.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { GeneratorModule } from './generator/generator.module';
     UserModule,
     PrismaModule,
     GeneratorModule,
+    BookingsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

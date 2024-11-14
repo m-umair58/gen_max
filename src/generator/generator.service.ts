@@ -27,7 +27,7 @@ export class GeneratorService {
         try{
             const generator = await this.prisma.generator.findFirst({
                 where:{
-                    id
+                    id:Number(id)
                 }
             })
             return generator;

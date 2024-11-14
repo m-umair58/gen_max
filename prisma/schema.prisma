@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,36 +7,32 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User{
-  id Int @id @default(autoincrement())
+model User {
+  id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  email String @unique
-  hash String
-
+  email     String   @unique
+  hash      String
   firstName String?
-  lastName String?
-
-  Role String
+  lastName  String?
+  Role      String
 
   @@map("Users")
-
 }
 
-model Generator{
-  id Int @id @default(autoincrement())
+model Generator {
+  id        Int    @id @default(autoincrement())
   genNumber String
-  capacity Int
+  capacity  Int
 
   @@map("Generators")
-
 }
 
-model Booking{
-  id Int @id @default(autoincrement())
-  genId Int
+model Booking {
+  id          Int      @id @default(autoincrement())
+  genId       Int
   bookingDate DateTime
-  returnDare DateTime
+  returnDate  DateTime
+
   @@map("Bookings")
 }
