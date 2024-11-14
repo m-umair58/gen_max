@@ -23,4 +23,19 @@ export class GeneratorService {
               }
         }
     }
+    async getGeneratorById(id:number){
+        try{
+            const generator = await this.prisma.generator.findFirst({
+                where:{
+                    id
+                }
+            })
+            return generator;
+        }
+        catch(e){
+            return {
+                msg:e.message
+            }
+        }
+    }
 }
