@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { bookingDto } from './dto';
 import { BookingsService } from './bookings.service';
@@ -10,5 +10,10 @@ export class BookingsController {
     @Post('create')
     create_booking(@Body() dto:bookingDto){
         return this.bookingService.create_booking(dto);
+    }
+
+    @Get('byGenId/:id')
+    getBookingsByGenId(@Param('id') id:number){
+        return this.bookingService.getBookingsByGenId(id);
     }
 }

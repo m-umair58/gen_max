@@ -29,4 +29,18 @@ export class BookingsService {
             }
         }
     }
+    async getBookingsByGenId(id:number){
+        try{
+            const bookings = await this.prisma.booking.findMany({
+                where:{
+                    genId:Number(id)
+                }
+            })
+            return bookings;
+        }catch(e){
+            return{
+                msg:e.message
+            }
+        }
+    }
 }
