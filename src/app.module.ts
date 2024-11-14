@@ -7,6 +7,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { ConfigModule } from '@nestjs/config';
 import { GeneratorModule } from './generator/generator.module';
 import { BookingsModule } from './bookings/bookings.module';
+import { GenWithBookingModule } from './gen-with-booking/gen-with-booking.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { BookingsModule } from './bookings/bookings.module';
     PrismaModule,
     GeneratorModule,
     BookingsModule,
+    GenWithBookingModule,
   ],
   controllers: [AppController],
   providers: [AppService],
