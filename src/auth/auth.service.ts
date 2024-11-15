@@ -2,7 +2,7 @@ import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/com
 import { User } from '@prisma/client';
 import { AuthDto } from './dto';
 import * as argon from 'argon2'
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
@@ -33,18 +33,28 @@ export class AuthService {
           });
           //return the saved user
         return this.signToken(user.id, user.email);
-        } catch (e) {
+        } catch (e: unknown) {
           if (e instanceof BadRequestException) {
             throw new BadRequestException('Role field is Required');
           }
           if (e instanceof PrismaClientKnownRequestError) {
-            console.log('Forbidden exception caught:', e.message); 
+            console.log('Forbidden exception caught:', e.message);
             throw new ForbiddenException('Email already taken');
           }
-          return {
-            msg:"error occured",
-            details:e.message
+        
+          // Handle case when 'e' is of unknown type
+          if (e instanceof Error) {
+            return {
+              msg: "error occurred",
+              details: e.message, // Safe to access e.message now
+            };
           }
+        
+          // If e is not an instance of Error or known exceptions
+          return {
+            msg: "error occurred",
+            details: 'Unknown error occurred', // Fallback for unknown types
+          };
         }
       }
 

@@ -4,7 +4,8 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { bookingDto } from './dto';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
+import * as XLSX from 'xlsx';
 
 @Injectable()
 export class BookingsService {
@@ -137,7 +138,7 @@ export class BookingsService {
         });
 
         if (isAvailable) {
-          availableGenerators.push(generator);
+          availableGenerators.push(generators);
         }
       }
 
@@ -148,5 +149,35 @@ export class BookingsService {
       console.error('Error checking availability:', e.message);
       throw new InternalServerErrorException('Failed to check availability');
     }
+  }
+
+  async processExcelFile(file: Express.Multer.File): Promise<void> {
+    const workbook = XLSX.read(file.buffer, { type: 'buffer' });
+    const sheetName = workbook.SheetNames[0]; // Use the first sheet in the Excel file
+    const sheet = workbook.Sheets[sheetName];
+    const data: any[] = XLSX.utils.sheet_to_json(sheet); // Convert Excel sheet to JSON
+
+    // Iterate over the rows and insert each one into the database
+    const insertPromises = data.map(async (row) => {
+      return this.prisma.bookings.create({
+        data: {
+          eventName: row.eventName || '',  // Default value handling
+          genSr: row.genSr || '',
+          instalationType: row.instalationType || '',
+          jobNumber: row.jobNumber || '',
+          location: row.location || '',
+          mainClient: row.mainClient || '',
+          numberOfDaysToHire: row.numberOfDaysToHire || 0,
+          projectNumber: row.projectNumber || '',
+          siteInfo: row.siteInfo || '',
+          subClient: row.subClient || '',
+          startDate: new Date(row.startDate),  // Assuming startDate and endDate are in a valid date format
+          endDate: new Date(row.endDate),      // Adjust date format if needed
+        },
+      });
+    });
+
+    // Wait for all data to be inserted
+    await Promise.all(insertPromises);
   }
 }

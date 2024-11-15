@@ -1,7 +1,8 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { Body, Controller, Get, Param, Post, Query, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
 import { bookingDto } from './dto';
 import { BookingsService } from './bookings.service';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('bookings')
 export class BookingsController {
@@ -29,5 +30,16 @@ export class BookingsController {
     console.log(start)
 
     return this.bookingService.checkGeneratorsAvailability(start, end,capacity);
+  }
+  @Post('upload')
+  @UseInterceptors(FileInterceptor('file'))  // 'file' is the key in the form-data request
+  async uploadFile(@UploadedFile() file: Express.Multer.File) {
+    try {
+      await this.bookingService.processExcelFile(file);  // Process the uploaded file
+      return { message: 'Bookings data inserted successfully!' };
+    } catch (error) {
+      console.error(error);
+      return { message: 'An error occurred while processing the file.' };
+    }
   }
 }

@@ -23,11 +23,12 @@ export class GeneratorService {
               }
         }
     }
-    async getGeneratorById(id:number){
+    async getGeneratorById(id:string){
+        console.log(id);
         try{
             const generator = await this.prisma.generators.findFirst({
                 where:{
-                    id:Number(id)
+                    genSrNumber:id
                 }
             })
             return generator;

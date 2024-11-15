@@ -23,13 +23,13 @@ model User {
 model Generators {
   id           Int    @id @default(autoincrement())
   genCapacity  String @default("") // Provide a default value
-  genSrNumber  String @default("")
+  genSrNumber  String @default("") @unique
 }
 
 model Bookings {
   id                   Int      @id @default(autoincrement())
   eventName            String   @default("") // Provide a default value
-  genSr                String   @default("")
+  genSr                String   @default("") 
   instalationType      String   @default("")
   jobNumber            String   @default("")
   location             String   @default("")

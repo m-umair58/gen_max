@@ -5,7 +5,7 @@ import { GenWithBookingService } from './gen-with-booking.service';
 export class GenWithBookingController {
     constructor(private genwithbookingService:GenWithBookingService){}
 
-    @Get('')
+    @Get()
     genWithBookings(){
         return this.genwithbookingService.genWithBookingsGroupedByCapacity();
     }
