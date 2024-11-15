@@ -9,10 +9,10 @@ export class GeneratorService {
 
     async add_generator(dto:genDto){
         try{
-            const generator = await this.prisma.generator.create({
+            const generator = await this.prisma.generators.create({
                 data:{
-                    genNumber:dto.genNumber,
-                    capacity:dto.genCapacity
+                    genSrNumber:dto.genSrNumber,
+                    genCapacity:dto.genCapacity
                 }
             })
             return generator
@@ -25,7 +25,7 @@ export class GeneratorService {
     }
     async getGeneratorById(id:number){
         try{
-            const generator = await this.prisma.generator.findFirst({
+            const generator = await this.prisma.generators.findFirst({
                 where:{
                     id:Number(id)
                 }

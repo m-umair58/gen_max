@@ -7,6 +7,6 @@ export class GenWithBookingController {
 
     @Get('')
     genWithBookings(){
-        return this.genwithbookingService.genWithBookings();
+        return this.genwithbookingService.genWithBookingsGroupedByCapacity();
     }
 }

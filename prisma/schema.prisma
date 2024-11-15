@@ -20,19 +20,24 @@ model User {
   @@map("Users")
 }
 
-model Generator {
-  id        Int    @id @default(autoincrement())
-  genNumber String
-  capacity  Int
-
-  @@map("Generators")
+model Generators {
+  id           Int    @id @default(autoincrement())
+  genCapacity  String @default("") // Provide a default value
+  genSrNumber  String @default("")
 }
 
-model Booking {
-  id          Int      @id @default(autoincrement())
-  genId       Int
-  bookingDate DateTime
-  returnDate  DateTime
-
-  @@map("Bookings")
+model Bookings {
+  id                   Int      @id @default(autoincrement())
+  eventName            String   @default("") // Provide a default value
+  genSr                String   @default("")
+  instalationType      String   @default("")
+  jobNumber            String   @default("")
+  location             String   @default("")
+  mainClient           String   @default("")
+  numberOfDaysToHire   Int      @default(0)
+  projectNumber        String   @default("")
+  siteInfo             String   @default("")
+  subClient            String   @default("")
+  startDate            DateTime
+  endDate              DateTime 
 }

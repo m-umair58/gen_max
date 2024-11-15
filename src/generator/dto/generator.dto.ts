@@ -3,9 +3,9 @@ import { IsNotEmpty, IsNumber, IsString } from "class-validator";
 export class genDto{
     @IsString()
     @IsNotEmpty()
-    genNumber:string
+    genSrNumber:string
 
-    @IsNumber()
+    @IsString()
     @IsNotEmpty()
-    genCapacity:number
+    genCapacity:string
 }

@@ -13,7 +13,7 @@ export class BookingsController {
   }
 
   @Get('byGenId/:id')
-  getBookingsByGenId(@Param('id') id: number) {
+  getBookingsByGenId(@Param('id') id: string) {
     return this.bookingService.getBookingsByGenId(id);
   }
 
@@ -21,13 +21,13 @@ export class BookingsController {
   async getGeneratorsAvailability(
     @Query('startDate') startDate: string,
     @Query('endDate') endDate: string,
-    @Query('capacity') capacity: number,
+    @Query('capacity') capacity: string,
   ) {
     // Convert the startDate and endDate to Date objects
     const start = new Date(startDate);
     const end = new Date(endDate);
     console.log(start)
 
-    return this.bookingService.checkGeneratorsAvailability(start, end,Number(capacity));
+    return this.bookingService.checkGeneratorsAvailability(start, end,capacity);
   }
 }
