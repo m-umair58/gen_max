@@ -15,7 +15,7 @@ async function bootstrap() {
 
   const allowedOrigins = [
     'https://gen-max.vercel.app', 
-    'https://localhost:4200',
+    'http://localhost:4200',
   ];
 
   app.use(
