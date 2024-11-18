@@ -31,6 +31,13 @@ export class BookingsController {
 
     return this.bookingService.checkGeneratorsAvailability(start, end,capacity);
   }
+
+  @Get('availableDates')
+  async getGeneratorAvailableDates(
+    @Query('serailNumber') Sr: string,
+  ){
+    return this.bookingService.getGeneratorAvailableDates(Sr);
+  }
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))  // 'file' is the key in the form-data request
   async uploadFile(@UploadedFile() file: Express.Multer.File) {

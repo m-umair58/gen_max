@@ -93,41 +93,32 @@ export class BookingsService {
     capacity: string,
   ) {
     try {
-      console.log('Checking availability from:', startDate, 'to:', endDate);
+      console.log('Requested capacity:', capacity);
 
+  
+      // Fetch generators matching the requested capacity
       const generators = await this.prisma.generators.findMany({
-        where: { 
-            genCapacity:capacity 
-        },
+        where: { genCapacity: capacity },
       });
-      console.log('Total generators:', generators.length);
-
+  
+  
       const availableGenerators = [];
-
+  
+      // Check availability of each generator
       for (const generator of generators) {
         const existingBookings = await this.prisma.bookings.findMany({
           where: {
             genSr: generator.genSrNumber,
           },
         });
-
-        console.log(
-          `Checking generator ${generator.id} with ${existingBookings.length} bookings`,
-        );
-
+  
+        // Determine if the generator is available
         const isAvailable = !existingBookings.some((booking) => {
           const bookingStart = new Date(booking.startDate);
           const bookingEnd = new Date(booking.endDate);
-
-          // Log each booking range to see why generators are being marked as unavailable
-          console.log(
-            `Generator ${generator.id} booking:`,
-            bookingStart,
-            'to',
-            bookingEnd,
-          );
-
-          // Check if the new booking range overlaps with existing booking range
+  
+  
+          // Check for overlap between requested dates and booking dates
           const overlap = startDate <= bookingEnd && endDate >= bookingStart;
           if (overlap) {
             console.log(
@@ -136,20 +127,21 @@ export class BookingsService {
           }
           return overlap;
         });
-
+  
         if (isAvailable) {
-          availableGenerators.push(generators);
+          // Push the specific available generator to the array
+          availableGenerators.push(generator);
         }
       }
-
-      console.log('Available generators:', availableGenerators);
-
+  
+  
       return availableGenerators;
     } catch (e) {
       console.error('Error checking availability:', e.message);
       throw new InternalServerErrorException('Failed to check availability');
     }
   }
+  
 
   async processExcelFile(file: Express.Multer.File): Promise<void> {
     const workbook = XLSX.read(file.buffer, { type: 'buffer' });
@@ -180,4 +172,50 @@ export class BookingsService {
     // Wait for all data to be inserted
     await Promise.all(insertPromises);
   }
+
+  async getGeneratorAvailableDates(genSrId: string) {
+    try {
+      // Fetch all bookings for the given generator
+      const bookings = await this.prisma.bookings.findMany({
+        where: { genSr: genSrId },
+        orderBy: { startDate: 'asc' }, // Ensure bookings are sorted by start date
+      });
+  
+      const availableDates = [];
+      const today = new Date(); // Use current date as the starting point for availability
+      let currentDate = new Date(today);
+  
+      // Loop through each booking to calculate available dates
+      for (const booking of bookings) {
+        const bookingStart = new Date(booking.startDate);
+        const bookingEnd = new Date(booking.endDate);
+  
+        // If currentDate is before the bookingStart, calculate the available range
+        if (currentDate < bookingStart) {
+          availableDates.push({
+            start: new Date(currentDate),
+            end: new Date(bookingStart),
+          });
+        }
+  
+        // Move currentDate pointer to after the bookingEnd
+        currentDate = new Date(Math.max(currentDate.getTime(), bookingEnd.getTime()));
+      }
+  
+      // After processing all bookings, add availability beyond the last booking
+      availableDates.push({
+        start: new Date(currentDate),
+        end: null, // Indicates no end date for availability
+      });
+  
+      return {
+        genSrId,
+        availableDates,
+      };
+    } catch (error) {
+      console.error('Error retrieving generator availability:', error.message);
+      throw new InternalServerErrorException('Failed to retrieve generator availability');
+    }
+  }
+  
 }
