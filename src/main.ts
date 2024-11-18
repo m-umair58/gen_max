@@ -11,7 +11,7 @@ async function bootstrap() {
   }
   ))
   app.use(cors({
-    origin: 'https://gen-max.vercel.app/', // Replace with your allowed origin
+    origin: 'https://gen-max.vercel.app', // Replace with your allowed origin
   }));
   await app.listen(process.env.PORT ?? 3000);
 }
