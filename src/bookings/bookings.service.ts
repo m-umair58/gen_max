@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
 } from '@nestjs/common';
 import { bookingDto } from './dto';
 import { PrismaService } from '../prisma/prisma.service';
@@ -176,14 +177,22 @@ export class BookingsService {
   async getGeneratorAvailableDates(genSrId: string) {
     try {
       // Fetch all bookings for the given generator
+      const generator = await this.prisma.generators.findFirst({
+        where:{ genSrNumber: genSrId }
+      })
+      if(!generator){
+        throw new NotFoundException("Generator with this Id doesn't exists...!")
+      }
       const bookings = await this.prisma.bookings.findMany({
         where: { genSr: genSrId },
         orderBy: { startDate: 'asc' }, // Ensure bookings are sorted by start date
       });
-  
       const availableDates = [];
       const today = new Date(); // Use current date as the starting point for availability
       let currentDate = new Date(today);
+  
+      // Format date to YYYY-MM-DD
+      const formatDate = (date: Date) => date.toISOString().split('T')[0];
   
       // Loop through each booking to calculate available dates
       for (const booking of bookings) {
@@ -193,8 +202,8 @@ export class BookingsService {
         // If currentDate is before the bookingStart, calculate the available range
         if (currentDate < bookingStart) {
           availableDates.push({
-            start: new Date(currentDate),
-            end: new Date(bookingStart),
+            start: formatDate(currentDate),
+            end: formatDate(bookingStart),
           });
         }
   
@@ -204,7 +213,7 @@ export class BookingsService {
   
       // After processing all bookings, add availability beyond the last booking
       availableDates.push({
-        start: new Date(currentDate),
+        start: formatDate(currentDate),
         end: null, // Indicates no end date for availability
       });
   
@@ -217,5 +226,4 @@ export class BookingsService {
       throw new InternalServerErrorException('Failed to retrieve generator availability');
     }
   }
-  
 }
