@@ -176,17 +176,20 @@ export class BookingsService {
 
   async getGeneratorAvailableDates(genSrId: string) {
     try {
-      // Fetch all bookings for the given generator
+      // Fetch the generator
       const generator = await this.prisma.generators.findFirst({
-        where:{ genSrNumber: genSrId }
-      })
-      if(!generator){
-        throw new NotFoundException("Generator with this Id doesn't exists...!")
+        where: { genSrNumber: genSrId },
+      });
+      if (!generator) {
+        throw new NotFoundException('Generator with this Id doesn\'t exist...!');
       }
+  
+      // Fetch all bookings for the generator
       const bookings = await this.prisma.bookings.findMany({
         where: { genSr: genSrId },
         orderBy: { startDate: 'asc' }, // Ensure bookings are sorted by start date
       });
+  
       const availableDates = [];
       const today = new Date(); // Use current date as the starting point for availability
       let currentDate = new Date(today);
@@ -199,16 +202,23 @@ export class BookingsService {
         const bookingStart = new Date(booking.startDate);
         const bookingEnd = new Date(booking.endDate);
   
-        // If currentDate is before the bookingStart, calculate the available range
-        if (currentDate < bookingStart) {
+        // Adjust to make the range exclusive of booking dates
+        const exclusiveBookingStart = new Date(bookingStart);
+        exclusiveBookingStart.setDate(exclusiveBookingStart.getDate() - 1);
+  
+        const exclusiveBookingEnd = new Date(bookingEnd);
+        exclusiveBookingEnd.setDate(exclusiveBookingEnd.getDate() + 1);
+  
+        // If currentDate is before the exclusiveBookingStart, calculate the available range
+        if (currentDate <= exclusiveBookingStart) {
           availableDates.push({
             start: formatDate(currentDate),
-            end: formatDate(bookingStart),
+            end: formatDate(exclusiveBookingStart),
           });
         }
   
-        // Move currentDate pointer to after the bookingEnd
-        currentDate = new Date(Math.max(currentDate.getTime(), bookingEnd.getTime()));
+        // Move currentDate pointer to after the exclusiveBookingEnd
+        currentDate = new Date(Math.max(currentDate.getTime(), exclusiveBookingEnd.getTime()));
       }
   
       // After processing all bookings, add availability beyond the last booking
@@ -226,4 +236,5 @@ export class BookingsService {
       throw new InternalServerErrorException('Failed to retrieve generator availability');
     }
   }
+  
 }
